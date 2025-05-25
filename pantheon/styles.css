@@ -1,0 +1,91 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Fonts */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  /* Hero Section */
+  .hero {
+    background: url('pantheon-bg.jpg') no-repeat center center/cover;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 1px 1px 6px black;
+  }
+  
+  .hero h1 {
+    font-size: 3em;
+  }
+  
+  /* Section Headings */
+  section h2 {
+    text-align: center;
+    margin: 40px 0 20px;
+    font-size: 2em;
+    color: #444;
+  }
+  
+  /* Deity Cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 0 40px 40px;
+  }
+  
+  .card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: scale(1.03);
+  }
+  
+  .card h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  /* Timeline */
+  .timeline {
+    background: #f0f0f0;
+    padding: 40px;
+  }
+  
+  .timeline ul {
+    list-style: none;
+    padding-left: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .timeline li {
+    margin-bottom: 15px;
+    padding-left: 10px;
+    border-left: 4px solid #888;
+  }
+  
+  /* Footer */
+  footer {
+    background: #333;
+    color: #eee;
+    text-align: center;
+    padding: 20px;
+  }
+  

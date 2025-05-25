@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hindu Pantheon | World Pantheons</title>
+</head>
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav a {
+      text-decoration: none;
+      color: #3a3a3a;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .nav a:hover {
+      color: #d4803c;
+    }
+    
+    .nav a.active {
+      color: #d4803c;
+      font-weight: bold;
+    }
+    
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .hero {
+      background-image: url('/api/placeholder/1200/400');
+      background-size: cover;
+      background-position: center;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: white;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7));
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 20px;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+    
+    .breadcrumbs {
+      background-color: white;
+      padding: 15px 10%;
+      font-size: 14px;
+      color: #888;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    
+    .breadcrumbs a {
+      color: #d4803c;
+      text-decoration: none;
+    }
+    
+    .breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+    
+    .breadcrumb-divider {
+      margin: 0 10px;
+    }
+    
+    .pantheon-overview {
+      padding: 60px 10%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .pantheon-intro {
+      display: flex;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+    
+    .intro-text {
+      flex: 3;
+    }
+    
+    .intro-text h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #d4803c;
+      font-weight: normal;
+    }
+    
+    .intro-text p {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .intro-sidebar {
+      flex: 1;
+    }
+    
+    .info-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .info-card h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4803c;
+      font-weight: normal;
+    }
+    
+    .info-list {
+      list-style: none;
+    }
+    
+    .info-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .info-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      color: #888;
+    }
+    
+    .info-value {
+      font-weight: bold;
+      color: #3a3a3a;
+    }
+    
+    .section-title {
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #d4803c;
+      font-weight: normal;
+      text-align: center;
+    }
+    
+    .section-subtitle {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      color: #888;
+    }
+    
+    .olympians-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+    
+    .deity-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    
+    .deity-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .deity-image {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .zeus-bg { background-color: #4B89DC; }
+    .hera-bg { background-color: #8CC152; }
+    .poseidon-bg { background-color: #5D9CEC; }
+    .demeter-bg { background-color: #A0D468; }
+    .athena-bg { background-color: #AC92EC; }
+    .apollo-bg { background-color: #FFCE54; }
+    .artemis-bg { background-color: #48CFAD; }
+    .ares-bg { background-color: #ED5565; }
+    .aphrodite-bg { background-color: #EC87C0; }
+    .hephaestus-bg { background-color: #FC6E51; }
+    .hermes-bg { background-color: #4FC1E9; }
+    .dionysus-bg { background-color: #AC92EC; }
+    
+    .deity-domain {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      font-size: 14px;
+    }
+    
+    .deity-content {
+      padding: 20px;
+    }
+    
+    .deity-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #d4803c;
+    }
+    
+    .deity-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .deity-symbols {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .symbol-label {
+      margin-right: 10px;
+    }
+    
+    .symbol-list {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .symbol {
+      background-color: #f9f1ea;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    
+    .mythology-timeline {
+      margin: 60px 0;
+      padding: 40px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .timeline {
+      position: relative;
+      padding: 30px 0;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 100%;
+      background-color: #f0f0f0;
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 50px;
+    }
+    
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .timeline-content {
+      position: relative;
+      width: 45%;
+      padding: 20px;
+      background-color: #f9f1ea;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content {
+      margin-left: auto;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: -15px;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-right: 15px solid #f9f1ea;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-content::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -15px;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-left: 15px solid #f9f1ea;
+    }
+    
+    .timeline-date {
+      position: absolute;
+      top: 20px;
+      width: 100px;
+      padding: 5px 10px;
+      background-color: #d4803c;
+      color: white;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-date {
+      left: -140px;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-date {
+      right: -140px;
+    }
+    
+    .timeline-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .timeline-text {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .circle-marker {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: #d4803c;
+      border: 4px solid #f9f1ea;
+      border-radius: 50%;
+    }
+    
+    .artifacts-section {
+      padding: 60px 0;
+    }
+    
+    .artifacts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .artifact-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .artifact-image {
+      height: 200px;
+      background-color: #eee;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .artifact-content {
+      padding: 20px;
+    }
+    
+    .artifact-name {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .artifact-info {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    
+    .artifact-description {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    
+    .related-deities {
+      background-color: #f9f1ea;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+    
+    .related-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #d4803c;
+    }
+    
+    .influence-section {
+      padding: 60px 0;
+      background-color: white;
+      margin: 60px 0;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .influence-content {
+      display: flex;
+      gap: 40px;
+    }
+    
+    .influence-text {
+      flex: 1;
+    }
+    
+    .influence-text h3 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .influence-text p {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .influence-categories {
+      flex: 1;
+    }
+    
+    .influence-category {
+      margin-bottom: 20px;
+    }
+    
+    .category-name {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .category-examples {
+      background-color: #f9f1ea;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    
+    .example-item {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #efe1d1;
+    }
+    
+    .example-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    .example-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .example-description {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .stories-section {
+      margin: 60px 0;
+    }
+    
+    .story-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    
+    .story-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .story-image {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .story-tag {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+    }
+    
+    .story-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .story-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .story-summary {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+    
+    .story-characters {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 15px;
+    }
+    
+    .character-label {
+      font-weight: bold;
+    }
+    
+    .story-link {
+      text-align: right;
+    }
+    
+    .story-link a {
+      color: #d4803c;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    
+    .story-link a:hover {
+      color: #b36a30;
+      text-decoration: underline;
+    }
+    
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .footer-col {
+      flex: 1;
+      padding: 0 20px;
+    }
+    
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: #d4803c;
+    }
+    
+    .newsletter {
+      margin-top: 20px;
+    }
+    
+    .newsletter-input {
+      display: flex;
+    }
+    
+    .newsletter-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    .newsletter-input button {
+      padding: 10px 15px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .newsletter-input button:hover {
+      background-color: #b36a30;
+    }
+    
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .social-icon:hover {
+      background-color: #d4803c;
+      color: white;
+    }
+  </style>
+<body>
+
+  <section class="hero hindu-bg">
+    <div class="hero-content">
+      <h1>Hindu Pantheon</h1>
+      <p class="subtitle">Explore the vast and diverse gods of Hindu mythology, from creator Brahma to preserver Vishnu</p>
+    </div>
+  </section>
+
+  <section class="pantheon-details">
+    <h2>About the Hindu Pantheon</h2>
+    <p>The Hindu pantheon contains many gods and goddesses, each embodying different aspects of life, cosmic forces, and dharma (duty).</p>
+    
+    <h3>Notable Deities</h3>
+    <ul>
+      <li><strong>Brahma</strong> – Creator god</li>
+      <li><strong>Vishnu</strong> – Preserver of the universe</li>
+      <li><strong>Shiva</strong> – Destroyer and transformer</li>
+      <li><strong>Lakshmi</strong> – Goddess of wealth</li>
+      <li><strong>Saraswati</strong> – Goddess of knowledge</li>
+      <li><strong>Durga</strong> – Warrior goddess</li>
+    </ul>
+
+    <a href="../pantheons.html" class="btn">← Back to Explore</a>
+  </section>
+
+</body>
+</html>

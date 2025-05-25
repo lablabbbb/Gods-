@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Greek Pantheon - Mythic Deities</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav a {
+      text-decoration: none;
+      color: #3a3a3a;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .nav a:hover {
+      color: #d4803c;
+    }
+    
+    .nav a.active {
+      color: #d4803c;
+      font-weight: bold;
+    }
+    
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .hero {
+      background-image: url('/api/placeholder/1200/400');
+      background-size: cover;
+      background-position: center;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: white;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7));
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 20px;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+    
+    .breadcrumbs {
+      background-color: white;
+      padding: 15px 10%;
+      font-size: 14px;
+      color: #888;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    
+    .breadcrumbs a {
+      color: #d4803c;
+      text-decoration: none;
+    }
+    
+    .breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+    
+    .breadcrumb-divider {
+      margin: 0 10px;
+    }
+    
+    .pantheon-overview {
+      padding: 60px 10%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .pantheon-intro {
+      display: flex;
+      gap: 50px;
+      margin-bottom: 60px;
+    }
+    
+    .intro-text {
+      flex: 3;
+    }
+    
+    .intro-text h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #d4803c;
+      font-weight: normal;
+    }
+    
+    .intro-text p {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .intro-sidebar {
+      flex: 1;
+    }
+    
+    .info-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .info-card h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4803c;
+      font-weight: normal;
+    }
+    
+    .info-list {
+      list-style: none;
+    }
+    
+    .info-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .info-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      color: #888;
+    }
+    
+    .info-value {
+      font-weight: bold;
+      color: #3a3a3a;
+    }
+    
+    .section-title {
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #d4803c;
+      font-weight: normal;
+      text-align: center;
+    }
+    
+    .section-subtitle {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      color: #888;
+    }
+    
+    .olympians-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+    
+    .deity-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    
+    .deity-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .deity-image {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .zeus-bg { background-color: #4B89DC; }
+    .hera-bg { background-color: #8CC152; }
+    .poseidon-bg { background-color: #5D9CEC; }
+    .demeter-bg { background-color: #A0D468; }
+    .athena-bg { background-color: #AC92EC; }
+    .apollo-bg { background-color: #FFCE54; }
+    .artemis-bg { background-color: #48CFAD; }
+    .ares-bg { background-color: #ED5565; }
+    .aphrodite-bg { background-color: #EC87C0; }
+    .hephaestus-bg { background-color: #FC6E51; }
+    .hermes-bg { background-color: #4FC1E9; }
+    .dionysus-bg { background-color: #AC92EC; }
+    
+    .deity-domain {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      font-size: 14px;
+    }
+    
+    .deity-content {
+      padding: 20px;
+    }
+    
+    .deity-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #d4803c;
+    }
+    
+    .deity-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .deity-symbols {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .symbol-label {
+      margin-right: 10px;
+    }
+    
+    .symbol-list {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .symbol {
+      background-color: #f9f1ea;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    
+    .mythology-timeline {
+      margin: 60px 0;
+      padding: 40px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .timeline {
+      position: relative;
+      padding: 30px 0;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 100%;
+      background-color: #f0f0f0;
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 50px;
+    }
+    
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .timeline-content {
+      position: relative;
+      width: 45%;
+      padding: 20px;
+      background-color: #f9f1ea;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content {
+      margin-left: auto;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: -15px;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-right: 15px solid #f9f1ea;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-content::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -15px;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-left: 15px solid #f9f1ea;
+    }
+    
+    .timeline-date {
+      position: absolute;
+      top: 20px;
+      width: 100px;
+      padding: 5px 10px;
+      background-color: #d4803c;
+      color: white;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-date {
+      left: -140px;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-date {
+      right: -140px;
+    }
+    
+    .timeline-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .timeline-text {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .circle-marker {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: #d4803c;
+      border: 4px solid #f9f1ea;
+      border-radius: 50%;
+    }
+    
+    .artifacts-section {
+      padding: 60px 0;
+    }
+    
+    .artifacts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .artifact-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .artifact-image {
+      height: 200px;
+      background-color: #eee;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .artifact-content {
+      padding: 20px;
+    }
+    
+    .artifact-name {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .artifact-info {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    
+    .artifact-description {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    
+    .related-deities {
+      background-color: #f9f1ea;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+    
+    .related-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #d4803c;
+    }
+    
+    .influence-section {
+      padding: 60px 0;
+      background-color: white;
+      margin: 60px 0;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .influence-content {
+      display: flex;
+      gap: 40px;
+    }
+    
+    .influence-text {
+      flex: 1;
+    }
+    
+    .influence-text h3 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .influence-text p {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .influence-categories {
+      flex: 1;
+    }
+    
+    .influence-category {
+      margin-bottom: 20px;
+    }
+    
+    .category-name {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .category-examples {
+      background-color: #f9f1ea;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    
+    .example-item {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #efe1d1;
+    }
+    
+    .example-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    .example-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .example-description {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .stories-section {
+      margin: 60px 0;
+    }
+    
+    .story-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    
+    .story-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .story-image {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .story-tag {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+    }
+    
+    .story-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .story-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .story-summary {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+    
+    .story-characters {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 15px;
+    }
+    
+    .character-label {
+      font-weight: bold;
+    }
+    
+    .story-link {
+      text-align: right;
+    }
+    
+    .story-link a {
+      color: #d4803c;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    
+    .story-link a:hover {
+      color: #b36a30;
+      text-decoration: underline;
+    }
+    
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .footer-col {
+      flex: 1;
+      padding: 0 20px;
+    }
+    
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: #d4803c;
+    }
+    
+    .newsletter {
+      margin-top: 20px;
+    }
+    
+    .newsletter-input {
+      display: flex;
+    }
+    
+    .newsletter-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    .newsletter-input button {
+      padding: 10px 15px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .newsletter-input button:hover {
+      background-color: #b36a30;
+    }
+    
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .social-icon:hover {
+      background-color: #d4803c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <header class="header">
+    <div class="logo">mythic.dei</div>
+    <nav class="nav">
+      <a href="../homepage.html">Home</a>
+      <a href="../pantheons.html" class="active">Pantheons</a>
+      <a href="../deities.html">Deities</a>
+      <a href="../encyclopedia.html">Encyclopedia</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact</a>
+    </nav>
+    <div class="icons">
+      <span>🔍</span>
+      <span>🛒</span>
+      <span>👤</span>
+    </div>
+  </header>
+  
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Greek Pantheon</h1>
+      <p class="subtitle">The Olympian gods and goddesses who shaped Western civilization</p>
+      <p style="font-size: 14px; opacity: 0.8;">Active period: c. 1200 BCE - 400 CE</p>
+    </div>
+  </section>
+  
+  <div class="breadcrumbs">
+    <a href="../homepage.html">Home</a>
+    <span class="breadcrumb-divider">></span>
+    <a href="../pantheons.html">Pantheons</a>
+    <span class="breadcrumb-divider">></span>
+    <span>Greek Pantheon</span>
+  </div>
+  
+  <section class="pantheon-overview">
+    <div class="pantheon-intro">
+      <div class="intro-text">
+        <h2>Overview of the Greek Pantheon</h2>
+        <p>The Greek pantheon stands as one of the most influential religious systems in human history, with its deities and tales permeating Western art, literature, and thought for millennia. Centered around the Twelve Olympians who resided atop Mount Olympus under the leadership of Zeus, this complex theological system portrayed gods with distinctly human traits—beautiful and powerful, yet also flawed and capricious.</p>
+        <p>Unlike many other ancient belief systems, Greek mythology presented deities who were neither completely good nor entirely evil, but rather multifaceted beings with their own desires, jealousies, and relationships. Their anthropomorphic nature allowed ancient Greeks to relate to these supernatural beings, while their divine powers inspired awe and reverence.</p>
+        <p>Although the Olympians represented the pinnacle of divine hierarchy, Greek religion recognized thousands of deities, from primordial forces like Chaos and Gaia, to the Titans who preceded the Olympians, to countless nymphs, spirits, and demigods who populated the natural world. This rich tapestry of divine entities reflected the Greeks' attempt to understand both cosmic forces and human nature itself.</p>
+        <p>The mythology that grew around these figures not only provided explanations for natural phenomena and human behavior but also established ethical frameworks and cultural identity for the ancient Greek civilization. Even after the rise of Christianity and the fall of pagan worship, these mythological figures continued to resonate through the ages, shaping Western consciousness in profound and enduring ways.</p>
+      </div>
+      <div class="intro-sidebar">
+        <div class="info-card">
+          <h3>Pantheon Facts</h3>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">Region:</span>
+              <span class="info-value">Mediterranean</span>
+            </li>
+            <li>
+              <span class="info-label">Origin:</span>
+              <span class="info-value">c. 1200 BCE</span>
+            </li>
+            <li>
+              <span class="info-label">Major Deities:</span>
+              <span class="info-value">12</span>
+            </li>
+            <li>
+              <span class="info-label">Minor Deities:</span>
+              <span class="info-value">100+</span>
+            </li>
+            <li>
+              <span class="info-label">Sacred Texts:</span>
+              <span class="info-value">Iliad, Odyssey, Theogony</span>
+            </li>
+            <li>
+              <span class="info-label">Practice Status:</span>
+              <span class="info-value">Historical (Revival movements exist)</span>
+            </li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Key Concepts</h3>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">Cosmogony:</span>
+              <span class="info-value">Creation from Chaos</span>
+            </li>
+            <li>
+              <span class="info-label">Afterlife:</span>
+              <span class="info-value">Underworld (Hades)</span>
+            </li>
+            <li>
+              <span class="info-label">Divine Realms:</span>
+              <span class="info-value">Olympus, Earth, Underworld, Sea</span>
+            </li>
+            <li>
+              <span class="info-label">Worship Centers:</span>
+              <span class="info-value">Temples, Oracles, Festivals</span>
+            </li>
+            <li>
+              <span class="info-label">Religious Practice:</span>
+              <span class="info-value">Sacrifice, Libation, Prayer</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <h2 class="section-title">The Twelve Olympians</h2>
+    <p class="section-subtitle">The principal deities who resided atop Mount Olympus, ruling over various aspects of the cosmos and human experience</p>
+    
+    <div class="olympians-grid">
+      <div class="deity-card">
+        <div class="deity-image zeus-bg">
+          <div class="deity-domain">God of the Sky, Thunder, and Justice</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Zeus</h3>
+          <p class="deity-description">King of the gods and ruler of Mount Olympus, Zeus overthrew his father Cronus and drew lots with his brothers Poseidon and Hades to determine who would rule which realm.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Thunderbolt</span>
+              <span class="symbol">Eagle</span>
+              <span class="symbol">Oak Tree</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image hera-bg">
+          <div class="deity-domain">Goddess of Marriage and Birth</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Hera</h3>
+          <p class="deity-description">Queen of the gods and Zeus's wife, Hera was the protector of women, particularly during marriage and childbirth, but was often vengeful toward Zeus's many lovers.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Peacock</span>
+              <span class="symbol">Pomegranate</span>
+              <span class="symbol">Diadem</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image poseidon-bg">
+          <div class="deity-domain">God of the Sea, Earthquakes, and Horses</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Poseidon</h3>
+          <p class="deity-description">Brother of Zeus and god of the seas, Poseidon was known for his tempestuous nature. He created horses from sea foam and caused earthquakes when angered.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Trident</span>
+              <span class="symbol">Horse</span>
+              <span class="symbol">Bull</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image demeter-bg">
+          <div class="deity-domain">Goddess of Agriculture and Harvest</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Demeter</h3>
+          <p class="deity-description">Sister of Zeus and goddess of the harvest, Demeter controlled the fertility of the earth. Her grief over her daughter Persephone's abduction caused the seasons.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Wheat</span>
+              <span class="symbol">Cornucopia</span>
+              <span class="symbol">Torch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image athena-bg">
+          <div class="deity-domain">Goddess of Wisdom and Strategic Warfare</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Athena</h3>
+          <p class="deity-description">Born fully armored from Zeus's forehead, Athena became the patron deity of Athens. She embodied wisdom, strategy in warfare, and skilled crafts.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Owl</span>
+              <span class="symbol">Olive Tree</span>
+              <span class="symbol">Aegis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="deity-card">
+        <div class="deity-image apollo-bg">
+          <div class="deity-domain">God of Music, Prophecy, and Healing</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Apollo</h3>
+          <p class="deity-description">Son of Zeus and twin brother of Artemis, Apollo was associated with light, truth, healing, music, and prophecy. He drove the sun chariot across the sky and was patron of the Oracle at Delphi.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Lyre</span>
+              <span class="symbol">Bow</span>
+              <span class="symbol">Laurel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image artemis-bg">
+          <div class="deity-domain">Goddess of the Hunt and Wilderness</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Artemis</h3>
+          <p class="deity-description">Twin sister of Apollo, Artemis was the virgin goddess of the hunt, wilderness, animals, and protector of young girls. She was depicted as a skilled archer and hunter.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Bow</span>
+              <span class="symbol">Deer</span>
+              <span class="symbol">Crescent Moon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image ares-bg">
+          <div class="deity-domain">God of War and Bloodlust</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Ares</h3>
+          <p class="deity-description">Son of Zeus and Hera, Ares embodied the raw violence and brutality of war. Unlike Athena's strategic approach, Ares represented bloodlust and the chaotic nature of battle.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Spear</span>
+              <span class="symbol">Shield</span>
+              <span class="symbol">Boar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image aphrodite-bg">
+          <div class="deity-domain">Goddess of Love and Beauty</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Aphrodite</h3>
+          <p class="deity-description">Born from sea foam, Aphrodite was the embodiment of love, beauty, pleasure, and passion. Her powerful influence extended to gods and mortals alike, often leading to both joy and tragedy.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Dove</span>
+              <span class="symbol">Rose</span>
+              <span class="symbol">Scallop Shell</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image hephaestus-bg">
+          <div class="deity-domain">God of Fire and Craftsmanship</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Hephaestus</h3>
+          <p class="deity-description">Son of Hera and husband of Aphrodite, Hephaestus was the master blacksmith and craftsman of the gods. Though lame, he created magnificent weapons, jewelry, and mechanical wonders.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Hammer</span>
+              <span class="symbol">Anvil</span>
+              <span class="symbol">Fire</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image hermes-bg">
+          <div class="deity-domain">God of Commerce, Thieves, and Messengers</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Hermes</h3>
+          <p class="deity-description">Son of Zeus, Hermes was the swift messenger of the gods. He guided souls to the underworld and was patron of travelers, merchants, shepherds, and thieves.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Caduceus</span>
+              <span class="symbol">Winged Sandals</span>
+              <span class="symbol">Petasos Hat</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="deity-card">
+        <div class="deity-image dionysus-bg">
+          <div class="deity-domain">God of Wine and Ecstasy</div>
+        </div>
+        <div class="deity-content">
+          <h3 class="deity-name">Dionysus</h3>
+          <p class="deity-description">Son of Zeus, Dionysus was the last to join the Olympians. Associated with wine, fertility, theater, and religious ecstasy, his worship involved wild, frenzied rituals.</p>
+          <div class="deity-symbols">
+            <span class="symbol-label">Symbols:</span>
+            <div class="symbol-list">
+              <span class="symbol">Grapevine</span>
+              <span class="symbol">Thyrsus</span>
+              <span class="symbol">Panther</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mythology-timeline">
+      <h2 class="section-title">Major Events in Greek Mythology</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Before Time</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Emergence of Chaos</h3>
+            <p class="timeline-text">In the beginning was Chaos, a void or chasm from which everything else appeared. From Chaos emerged Gaia (Earth), Tartarus (Underworld), Eros (Love), Erebus (Darkness), and Nyx (Night).</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">First Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Birth of the Titans</h3>
+            <p class="timeline-text">Gaia gave birth to Uranus (Sky), with whom she produced the twelve Titans, including Cronus and Rhea, as well as the Cyclopes and the Hecatoncheires.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Second Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Overthrow of Uranus</h3>
+            <p class="timeline-text">Urged by Gaia, Cronus overthrew his father Uranus by castrating him. From Uranus's blood sprang the Erinyes (Furies), Giants, and Meliae. From the sea foam where his genitals fell was born Aphrodite.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Third Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Reign of Cronus</h3>
+            <p class="timeline-text">Cronus married his sister Rhea. Fearing a prophecy that he would be overthrown by his children, he swallowed each of them at birth: Hestia, Demeter, Hera, Hades, and Poseidon.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Fourth Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Birth of Zeus</h3>
+            <p class="timeline-text">To protect her youngest child, Rhea gave Cronus a stone wrapped in swaddling clothes to swallow instead of Zeus. She hid Zeus on Crete, where he was raised by nymphs and the goat Amalthea.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Fifth Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Titanomachy</h3>
+            <p class="timeline-text">Upon reaching adulthood, Zeus forced Cronus to regurgitate his siblings. Together with the Hecatoncheires and Cyclopes, they waged a ten-year war against the Titans, eventually defeating them.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Sixth Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Division of the Cosmos</h3>
+            <p class="timeline-text">After victory, Zeus, Poseidon, and Hades drew lots to divide rule of the cosmos. Zeus received the sky, Poseidon the sea, and Hades the underworld, with earth as common ground for all.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Seventh Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Creation of Humanity</h3>
+            <p class="timeline-text">Prometheus, a Titan who sided with Zeus, created humans from clay. He later stole fire from Olympus to give to humanity, for which Zeus punished him severely.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="circle-marker"></div>
+          <div class="timeline-date">Heroic Age</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Age of Heroes</h3>
+            <p class="timeline-text">The era of demigods and legendary heroes like Heracles, Theseus, Perseus, and Jason. Many were children of gods and mortals, undertaking great quests and facing monstrous challenges.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <h2 class="section-title">Divine Artifacts</h2>
+    <p class="section-subtitle">Sacred objects of immense power created or wielded by the gods</p>
+    
+    <div class="artifacts-grid">
+      <div class="artifact-card">
+        <div class="artifact-image" style="background-color: #4B89DC;"></div>
+        <div class="artifact-content">
+          <h3 class="artifact-name">Thunderbolt (Keraunos)</h3>
+          <div class="artifact-info">Zeus's primary weapon</div>
+          <p class="artifact-description">Forged by the Cyclopes, this lightning bolt was Zeus's signature weapon and symbol of his authority. Capable of shaking Mount Olympus itself, it could reduce mountains to rubble and was the most feared weapon in the divine arsenal.</p>
+          <div class="related-deities">
+            <div class="related-title">Associated Deities:</div>
+            Zeus, Cyclopes
+          </div>
+        </div>
+      </div>
+      
+      <div class="artifact-card">
+        <div class="artifact-image" style="background-color: #5D9CEC;"></div>
+        <div class="artifact-content">
+          <h3 class="artifact-name">Trident of Poseidon</h3>
+          <div class="artifact-info">Symbol of sea power</div>
+          <p class="artifact-description">This three-pronged spear gave Poseidon control over the seas. With it, he could create storms, summon floods, shatter any object, and even cause earthquakes when striking the ground.</p>
+          <div class="related-deities">
+            <div class="related-title">Associated Deities:</div>
+            Poseidon, Cyclopes (creators)
+          </div>
+        </div>
+      </div>
+      
+      <div class="artifact-card">
+        <div class="artifact-image" style="background-color: #AC92EC;"></div>
+        <div class="artifact-content">
+          <h3 class="artifact-name">Aegis</h3>
+          <div class="artifact-info">Divine shield</div>
+          <p class="artifact-description">A shield or breastplate worn by Zeus and Athena, adorned with the fearsome head of Medusa. It produced a sound like a thousand dragons when shaken and could terrify entire armies.</p>
+          <div class="related-deities">
+            <div class="related-title">Associated Deities:</div>
+            Athena, Zeus, Hephaestus (creator)
+          </div>
+        </div>
+      </div>
+      
+      <div class="artifact-card">
+        <div class="artifact-image" style="background-color: #ED5565;"></div>
+        <div class="artifact-content">
+          <h3 class="artifact-name">Helm of Darkness</h3>
+          <div class="artifact-info">Invisibility helmet</div>
+          <p class="artifact-description">Created by the Cyclopes for Hades during the Titanomachy, this helmet rendered its wearer completely invisible, even to other gods. It was occasionally borrowed by other deities and heroes for special missions.</p>
+          <div class="related-deities">
+            <div class="related-title">Associated Deities:</div>
+            Hades, Cyclopes (creators), Perseus (borrowed it)
+          </div>
+        </div>
+      </div>
+      
+      <div class="artifact-card">
+        <div class="artifact-image" style="background-color: #FFCE54;"></div>
+        <div class="artifact-content">
+          <h3 class="artifact-name">Apollo's Bow</h3>
+          <div class="artifact-info">Silver bow</div>
+          <p class="artifact-description">Apollo's golden bow fired arrows of light that could bring either healing or plague. When he shot it, it was said to produce a sound like clear music, and his arrows never missed their target.</p>
+          <div class="related-deities">
+            <div class="related-title">Associated Deities:</div>
+            Apollo, Hephaestus (creator)
+          </div>
+        </div>
+      </div>
+      
+      <div class="artifact-card">
+        <div class="artifact-image" style="background-color: #4FC1E9;"></div>
+        <div class="artifact-content">
+          <h3 class="artifact-name">Caduceus</h3>
+          <div class="artifact-info">Herald's staff</div>
+          <p class="artifact-description">Hermes' winged staff entwined with two serpents symbolized his role as divine messenger. It granted power over wealth, luck, and safe passage, and could induce sleep or guide souls to the underworld.</p>
+          <div class="related-deities">
+            <div class="related-title">Associated Deities:</div>
+            Hermes, Apollo (original owner)
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="influence-section">
+      <h2 class="section-title">Cultural Impact</h2>
+      <p class="section-subtitle">The enduring influence of Greek mythology on Western civilization through the ages</p>
+      
+      <div class="influence-content">
+        <div class="influence-text">
+          <h3>Legacy of the Greek Pantheon</h3>
+          <p>Few mythological systems have had as profound an impact on human culture as that of the ancient Greeks. From the Renaissance rediscovery of classical antiquity to modern blockbuster films, these ancient deities and their stories continue to captivate our imagination and shape our cultural consciousness.</p>
+          <p>The psychological depth and moral complexity of Greek myths have provided endless material for artists, writers, philosophers, and psychologists. Their timeless themes—hubris and nemesis, love and jealousy, heroism and sacrifice—continue to resonate because they speak to fundamental aspects of the human condition.</p>
+          <p>Beyond artistic inspiration, Greek mythology has contributed countless words, phrases, and metaphors to modern languages. From "Achilles' heel" to "Pandora's box," these mythological references permeate everyday speech, often used by people unaware of their ancient origins.</p>
+        </div>
+        
+        <div class="influence-categories">
+          <div class="influence-category">
+            <h4 class="category-name">Art & Literature</h4>
+            <div class="category-examples">
+              <div class="example-item">
+                <div class="example-title">Renaissance Art</div>
+                <div class="example-description">Botticelli's "Birth of Venus" and countless other masterpieces depict scenes from Greek mythology.</div>
+              </div>
+              <div class="example-item">
+                <div class="example-title">Modern Literature</div>
+                <div class="example-description">Works like James Joyce's "Ulysses" and Rick Riordan's "Percy Jackson" series reimagine ancient myths.</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="influence-category">
+            <h4 class="category-name">Science & Astronomy</h4>
+            <div class="category-examples">
+              <div class="example-item">
+                <div class="example-title">Celestial Bodies</div>
+                <div class="example-description">Planets, moons, and constellations throughout our solar system bear names from Greek mythology.</div>
+              </div>
+              <div class="example-item">
+                <div class="example-title">Scientific Terminology</div>
+                <div class="example-description">From Atlas vertebrae to the Achilles tendon, mythology permeates scientific nomenclature.</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="influence-category">
+            <h4 class="category-name">Psychology & Philosophy</h4>
+            <div class="category-examples">
+              <div class="example-item">
+                <div class="example-title">Freudian Concepts</div>
+                <div class="example-description">Terms like "Oedipus complex" and "narcissism" derive directly from Greek myths.</div>
+              </div>
+              <div class="example-item">
+                <div class="example-title">Philosophical Inquiry</div>
+                <div class="example-description">Ancient myths continue to inspire exploration of ethics, metaphysics, and human nature.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <section class="stories-section">
+      <h2 class="section-title">Featured Mythological Tales</h2>
+      <p class="section-subtitle">Classic stories that defined the Greek pantheon and continue to captivate readers today</p>
+      
+      <div class="story-cards">
+        <div class="story-card">
+          <div class="story-image" style="background-color: #AC92EC;"></div>
+          <span class="story-tag">Tragedy</span>
+          <div class="story-content">
+            <h3 class="story-title">Prometheus and the Gift of Fire</h3>
+            <p class="story-summary">After creating humans from clay, Titan Prometheus took pity on their primitive existence and stole fire from Mount Olympus to give them knowledge and civilization. For this transgression, Zeus had him chained to a mountain where an eagle ate his liver daily, only for it to regenerate each night.</p>
+            <div class="story-characters">
+              <span class="character-label">Featured Deities:</span> Prometheus, Zeus, Hephaestus
+            </div>
+            <div class="story-link">
+              <a href="../stories/prometheus.html">Read the full story →</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="story-card">
+          <div class="story-image" style="background-color: #A0D468;"></div>
+          <span class="story-tag">Seasonal Myth</span>
+          <div class="story-content">
+            <h3 class="story-title">Persephone and the Seasons</h3>
+            <p class="story-summary">When Hades abducted Persephone to the underworld, her mother Demeter's grief caused all plants to wither. Zeus intervened, decreeing that Persephone would spend part of each year with her mother and part with Hades, explaining the cycle of seasons.</p>
+            <div class="story-characters">
+              <span class="character-label">Featured Deities:</span> Persephone, Demeter, Hades, Zeus
+            </div>
+            <div class="story-link">
+              <a href="../stories/persephone.html">Read the full story →</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="story-card">
+          <div class="story-image" style="background-color: #EC87C0;"></div>
+          <span class="story-tag">Romance</span>
+          <div class="story-content">
+            <h3 class="story-title">Eros and Psyche</h3>
+            <p class="story-summary">When mortal princess Psyche incurred Aphrodite's jealousy, the goddess sent her son Eros to make Psyche fall in love with something hideous. Instead, Eros fell in love with her himself, beginning a tale of forbidden love, trials, and eventual immortality.</p>
+            <div class="story-characters">
+              <span class="character-label">Featured Deities:</span> Eros, Aphrodite, Zeus, Hermes
+            </div>
+            <div class="story-link">
+              <a href="../stories/eros-psyche.html">Read the full story →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+  
+  <footer class="footer">
+    <div class="footer-col">
+      <h3 class="footer-title">mythic.dei</h3>
+      <p style="color: #ccc; margin-bottom: 20px;">Exploring the sacred narratives that have shaped human civilization throughout history.</p>
+      <div class="social-icons">
+        <a href="#" class="social-icon">f</a>
+        <a href="#" class="social-icon">t</a>
+        <a href="#" class="social-icon">in</a>
+        <a href="#" class="social-icon">ig</a>
+      </div>
+    </div>
+    
+    <div class="footer-col">
+      <h3 class="footer-title">Explore</h3>
+      <ul class="footer-links">
+        <li><a href="../pantheons.html">All Pantheons</a></li>
+        <li><a href="../deities.html">Deity Index</a></li>
+        <li><a href="../stories.html">Mythological Stories</a></li>
+        <li><a href="../artifacts.html">Divine Artifacts</a></li>
+        <li><a href="../encyclopedia.html">Mythology Encyclopedia</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-col">
+      <h3 class="footer-title">Information</h3>
+      <ul class="footer-links">
+        <li><a href="../about.html">About Us</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="../academic.html">Academic Resources</a></li>
+        <li><a href="../privacy.html">Privacy Policy</a></li>
+        <li><a href="../terms.html">Terms of Use</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-col">
+      <h3 class="footer-title">Newsletter</h3>
+      <p style="color: #ccc; margin-bottom: 20px;">Subscribe to receive updates on new content and features.</p>
+      <div class="newsletter">
+        <div class="newsletter-input">
+          <input type="email" placeholder="Your email address">
+          <button>Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Three.js background effect
+    const canvasContainer = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    canvasContainer.appendChild(renderer.domElement);
+
+    // Create particles
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1000;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for (let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 10;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.01,
+      color: '#d4803c',
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    camera.position.z = 5;
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>
