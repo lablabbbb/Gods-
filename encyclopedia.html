@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mythic Deities - Encyclopedia</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav a {
+      text-decoration: none;
+      color: #3a3a3a;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .nav a:hover {
+      color: #d4803c;
+    }
+    
+    .nav a.active {
+      color: #d4803c;
+      font-weight: bold;
+    }
+    
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .encyclopedia-hero {
+        background-image: url('../images/your-image.jpg'); 
+      background-size: cover;
+      background-position: center;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    
+    .encyclopedia-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+    
+    .hero-content h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+      font-weight: normal;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    
+    .search-container {
+      margin-top: 20px;
+      display: flex;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+      font-size: 16px;
+    }
+    
+    .search-button {
+      padding: 12px 20px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .search-button:hover {
+      background-color: #b36a30;
+    }
+    
+    .content-wrapper {
+      display: flex;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .sidebar {
+      width: 250px;
+      margin-right: 40px;
+    }
+    
+    .main-content {
+      flex: 1;
+    }
+    
+    .category-title {
+      font-size: 18px;
+      color: #d4803c;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #d4803c;
+    }
+    
+    .category-list {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+    
+    .category-list li {
+      margin-bottom: 10px;
+    }
+    
+    .category-list a {
+      text-decoration: none;
+      color: #3a3a3a;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+    }
+    
+    .category-list a:hover {
+      color: #d4803c;
+    }
+    
+    .category-icon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .filter-box {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    
+    .filter-title {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #d4803c;
+    }
+    
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .filter-tag {
+      background-color: #f0e6dd;
+      color: #d4803c;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .filter-tag:hover, .filter-tag.active {
+      background-color: #d4803c;
+      color: white;
+    }
+    
+    .letter-navigation {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      background-color: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .letter-navigation a {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #3a3a3a;
+      transition: all 0.3s;
+      border-radius: 3px;
+      margin: 2px;
+    }
+    
+    .letter-navigation a:hover, .letter-navigation a.active {
+      background-color: #d4803c;
+      color: white;
+    }
+    
+    .entry-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .entry-card {
+      background-color: white;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    
+    .entry-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .entry-image {
+      height: 160px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('../images/your-image.jpg'); 
+    
+    .entry-content {
+      padding: 20px;
+    }
+    
+    .entry-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .entry-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 15px;
+    }
+    
+    .entry-tag {
+      background-color: #f0e6dd;
+      color: #d4803c;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+    }
+    
+    .featured-entries {
+      margin-bottom: 40px;
+    }
+    
+    .featured-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #3a3a3a;
+      font-weight: normal;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+    
+    .pagination a {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #3a3a3a;
+      border: 1px solid #ddd;
+      margin: 0 5px;
+      transition: all 0.3s;
+    }
+    
+    .pagination a:hover, .pagination a.active {
+      background-color: #d4803c;
+      color: white;
+      border-color: #d4803c;
+    }
+    
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .footer-col {
+      flex: 1;
+      padding: 0 20px;
+    }
+    
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: #d4803c;
+    }
+    
+    .newsletter {
+      margin-top: 20px;
+    }
+    
+    .newsletter-input {
+      display: flex;
+    }
+    
+    .newsletter-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    .newsletter-input button {
+      padding: 10px 15px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .newsletter-input button:hover {
+      background-color: #b36a30;
+    }
+    
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .social-icon:hover {
+      background-color: #d4803c;
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .content-wrapper {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 30px;
+      }
+      
+      .entry-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <header class="header">
+    <div class="logo">mythic.dei</div>
+    <nav class="nav">
+      <a href="homepage.html">Home</a>
+      <a href="pantheons.html">Pantheons</a>
+      <a href="deities.html">Deities</a>
+      <a href="encyclopedia.html" class="active">Encyclopedia</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="icons">
+      <span>🔍</span>
+      <span>🛒</span>
+      <span>👤</span>
+    </div>
+  </header>
+  
+  <section class="encyclopedia-hero">
+    <div class="hero-content">
+      <h1>Mythological Encyclopedia</h1>
+      <p class="subtitle">Explore our comprehensive collection of mythological concepts, symbols, creatures, artifacts, and places</p>
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search the encyclopedia...">
+        <button class="search-button">Search</button>
+      </div>
+    </div>
+  </section>
+  
+  <div class="content-wrapper">
+    <aside class="sidebar">
+      <div class="filter-box">
+        <h3 class="filter-title">Filter by Category</h3>
+        <div class="filter-options">
+          <span class="filter-tag active">All</span>
+          <span class="filter-tag">Creatures</span>
+          <span class="filter-tag">Symbols</span>
+          <span class="filter-tag">Artifacts</span>
+          <span class="filter-tag">Places</span>
+          <span class="filter-tag">Concepts</span>
+          <span class="filter-tag">Events</span>
+        </div>
+      </div>
+      
+      <div class="filter-box">
+        <h3 class="filter-title">Filter by Culture</h3>
+        <div class="filter-options">
+          <span class="filter-tag active">All</span>
+          <span class="filter-tag">Greek</span>
+          <span class="filter-tag">Norse</span>
+          <span class="filter-tag">Egyptian</span>
+          <span class="filter-tag">Hindu</span>
+          <span class="filter-tag">Celtic</span>
+          <span class="filter-tag">Aztec</span>
+          <span class="filter-tag">Japanese</span>
+          <span class="filter-tag">Chinese</span>
+        </div>
+      </div>
+      
+      <h3 class="category-title">Browse Categories</h3>
+      <ul class="category-list">
+        <li><a href="#creatures"><span class="category-icon">🐉</span> Mythological Creatures</a></li>
+        <li><a href="#symbols"><span class="category-icon">☯️</span> Sacred Symbols</a></li>
+        <li><a href="#artifacts"><span class="category-icon">⚔️</span> Divine Artifacts</a></li>
+        <li><a href="#places"><span class="category-icon">🏛️</span> Mythical Places</a></li>
+        <li><a href="#concepts"><span class="category-icon">💫</span> Cosmological Concepts</a></li>
+        <li><a href="#events"><span class="category-icon">⚡</span> Mythic Events</a></li>
+      </ul>
+      
+      <h3 class="category-title">Popular Topics</h3>
+      <ul class="category-list">
+        <li><a href="#underworld"><span class="category-icon">🔥</span> The Underworld</a></li>
+        <li><a href="#creation"><span class="category-icon">🌱</span> Creation Myths</a></li>
+        <li><a href="#dragons"><span class="category-icon">🐲</span> Dragons</a></li>
+        <li><a href="#flood"><span class="category-icon">🌊</span> Great Flood Myths</a></li>
+        <li><a href="#tricksters"><span class="category-icon">🎭</span> Trickster Figures</a></li>
+        <li><a href="#worldtree"><span class="category-icon">🌳</span> World Trees</a></li>
+      </ul>
+    </aside>
+    
+    <main class="main-content">
+      <div class="letter-navigation">
+        <a href="#" class="active">All</a>
+        <a href="#">A</a>
+        <a href="#">B</a>
+        <a href="#">C</a>
+        <a href="#">D</a>
+        <a href="#">E</a>
+        <a href="#">F</a>
+        <a href="#">G</a>
+        <a href="#">H</a>
+        <a href="#">I</a>
+        <a href="#">J</a>
+        <a href="#">K</a>
+        <a href="#">L</a>
+        <a href="#">M</a>
+        <a href="#">N</a>
+        <a href="#">O</a>
+        <a href="#">P</a>
+        <a href="#">Q</a>
+        <a href="#">R</a>
+        <a href="#">S</a>
+        <a href="#">T</a>
+        <a href="#">U</a>
+        <a href="#">V</a>
+        <a href="#">W</a>
+        <a href="#">X</a>
+        <a href="#">Y</a>
+        <a href="#">Z</a>
+      </div>
+      
+      <section class="featured-entries">
+        <h2 class="featured-title">Featured Encyclopedia Entries</h2>
+        <div class="entry-list">
+          <div class="entry-card">
+            <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+            <div class="entry-content">
+              <h3 class="entry-title">The Underworld</h3>
+              <p>The realm of the dead appears in nearly every mythology around the world, from the Greek Hades to the Norse Helheim.</p>
+              <div class="entry-tags">
+                <span class="entry-tag">Places</span>
+                <span class="entry-tag">Multiple</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="entry-card">
+            <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+            <div class="entry-content">
+              <h3 class="entry-title">Dragons</h3>
+              <p>Serpentine creatures appear across cultures, from the benevolent Chinese long to the treasure-hoarding European dragons.</p>
+              <div class="entry-tags">
+                <span class="entry-tag">Creatures</span>
+                <span class="entry-tag">Multiple</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="entry-card">
+            <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+            <div class="entry-content">
+              <h3 class="entry-title">Mjölnir</h3>
+              <p>The hammer of Thor, Norse god of thunder, which would always return to his hand after being thrown at a target.</p>
+              <div class="entry-tags">
+                <span class="entry-tag">Artifacts</span>
+                <span class="entry-tag">Norse</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <h2 class="featured-title" id="creatures">Mythological Creatures</h2>
+      <div class="entry-list">
+        <div class="entry-card">
+          <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+          <div class="entry-content">
+            <h3 class="entry-title">Phoenix</h3>
+            <p>A legendary bird that cyclically regenerates, obtains new life by rising from the ashes of its predecessor.</p>
+            <div class="entry-tags">
+              <span class="entry-tag">Creatures</span>
+              <span class="entry-tag">Greek</span>
+              <span class="entry-tag">Egyptian</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="entry-card">
+          <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+          <div class="entry-content">
+            <h3 class="entry-title">Minotaur</h3>
+            <p>A creature with the head of a bull and the body of a man, dwelling at the center of the Cretan Labyrinth.</p>
+            <div class="entry-tags">
+              <span class="entry-tag">Creatures</span>
+              <span class="entry-tag">Greek</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="entry-card">
+          <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+          <div class="entry-content">
+            <h3 class="entry-title">Jörmungandr</h3>
+            <p>The Midgard Serpent in Norse mythology that grew so large it encircled the world and grasped its own tail.</p>
+            <div class="entry-tags">
+              <span class="entry-tag">Creatures</span>
+              <span class="entry-tag">Norse</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <h2 class="featured-title" id="artifacts">Divine Artifacts</h2>
+      <div class="entry-list">
+        <div class="entry-card">
+          <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+          <div class="entry-content">
+            <h3 class="entry-title">Aegis</h3>
+            <p>The shield or breastplate worn by Zeus and Athena, often depicted with the head of Medusa at its center.</p>
+            <div class="entry-tags">
+              <span class="entry-tag">Artifacts</span>
+              <span class="entry-tag">Greek</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="entry-card">
+          <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+          <div class="entry-content">
+            <h3 class="entry-title">Excalibur</h3>
+            <p>The legendary sword of King Arthur, sometimes attributed with magical powers and associated with the sovereignty of Britain.</p>
+            <div class="entry-tags">
+              <span class="entry-tag">Artifacts</span>
+              <span class="entry-tag">Celtic</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="entry-card">
+          <div class="entry-image" style="background-image: url('../images/your-image.jpg')"></div>
+          <div class="entry-content">
+            <h3 class="entry-title">Gungnir</h3>
+            <p>The magical spear wielded by Odin, which is said to never miss its target once thrown.</p>
+            <div class="entry-tags">
+              <span class="entry-tag">Artifacts</span>
+              <span class="entry-tag">Norse</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="pagination">
+        <a href="#">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">→</a>
+      </div>
+    </main>
+  </div>
+  
+  <footer class="footer">
+    <div class="footer-col">
+      <h4 class="footer-title">Navigation</h4>
+      <ul class="footer-links">
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="pantheons.html">Pantheons</a></li>
+        <li><a href="deities.html">Deities</a></li>
+        <li><a href="encyclopedia.html">Encyclopedia</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Popular Pantheons</h4>
+      <ul class="footer-links">
+        <li><a href="pantheons.html#greek">Greek</a></li>
+        <li><a href="pantheons.html#norse">Norse</a></li>
+        <li><a href="pantheons.html#egyptian">Egyptian</a></li>
+        <li><a href="pantheons.html#hindu">Hindu</a></li>
+        <li><a href="pantheons.html#aztec">Aztec</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Connect With Us</h4>
+      <div class="social-icons">
+        <a href="#" class="social-icon">f</a>
+        <a href="#" class="social-icon">t</a>
+        <a href="#" class="social-icon">in</a>
+        <a href="#" class="social-icon">ig</a>
+      </div>
+      <div class="newsletter">
+        <p>Subscribe to our newsletter:</p>
+        <div class="newsletter-input">
+          <input type="email" placeholder="Enter your email">
+          <button>→</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Three.js setup for the rotating 3D sculpture
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Lighting setup
+    const ambientLight = new THREE.AmbientLight(0xd4803c, 0.4);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+
+    // Create symbolic 3D objects for the encyclopedia
+    const createEncyclopediaSymbols = () => {
+      const group = new THREE.Group();
+      
+      // Material with a bronze look
+      const bronzeMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0xd4803c,
+        shininess: 60,
+        specular: 0xffffff
+      });
+      
+      // Create several floating symbols
+      
+      // 1. Book or Scroll
+      const bookGeometry = new THREE.BoxGeometry(3, 0.4, 4);
+      const book = new THREE.Mesh(bookGeometry, bronzeMaterial);
+      book.position.set(-5, 2, 0);
+      book.rotation.y = Math.PI / 6;
+      group.add(book);
+      
+      // Book pages
+      const pagesGeometry = new THREE.BoxGeometry(2.8, 0.3, 3.8);
+      const pagesMaterial = new THREE.MeshPhongMaterial({ color: 0xf0e6dd });
+      const pages = new THREE.Mesh(pagesGeometry, pagesMaterial);
+      pages.position.set(-5, 2.1, 0);
+      pages.rotation.y = Math.PI / 6;
+      group.add(pages);
+      
+      // 2. Ancient column
+      const columnBaseGeometry = new THREE.CylinderGeometry(1, 1.2, 0.3, 16);
+      const columnBase = new THREE.Mesh(columnBaseGeometry, bronzeMaterial);
+      columnBase.position.set(5, -1, 0);
+      group.add(columnBase);
+      
+      const columnShaftGeometry = new THREE.CylinderGeometry(0.8, 0.8, 4, 16);
+      const columnShaft = new THREE.Mesh(columnShaftGeometry, bronzeMaterial);
+      columnShaft.position.set(5, 1, 0);
+      group.add(columnShaft);
+      
+      const columnCapGeometry = new THREE.CylinderGeometry(1.2, 1, 0.3, 16);
+      const columnCap = new THREE.Mesh(columnCapGeometry, bronzeMaterial);
+      columnCap.position.set(5, 3.1, 0);
+      group.add(columnCap);
+      
+      // 3. Floating ancient symbols (ankh, eye of horus, etc.)
+      const torusGeometry = new THREE.TorusGeometry(1, 0.3, 16, 48);
+      const torus = new THREE.Mesh(torusGeometry, bronzeMaterial);
+      torus.position.set(0, -2, 3);
+      torus.rotation.x = Math.PI / 2;
+      group.add(torus);
+      
+      // Vertical bar for ankh
+      const barGeometry = new THREE.BoxGeometry(0.3, 2, 0.3);
+      const bar = new THREE.Mesh(barGeometry, bronzeMaterial);
+      bar.position.set(0, -3.5, 3);
+      group.add(bar);
+      
+      // Create an Eye of Horus shape approximation
+      const eyeBallGeometry = new THREE.SphereGeometry(0.7, 32, 32);
+      const eyeBall = new THREE.Mesh(eyeBallGeometry, bronzeMaterial);
+      eyeBall.position.set(-3, -1, 5);
+      eyeBall.scale.set(1, 0.5, 0.5);
+      group.add(eyeBall);
+      
+    // Continuing from where the code left off...
+
+      // Circle in a triangle (symbolic eye)
+      const triangleShape = new THREE.Shape();
+      triangleShape.moveTo(0, 1);
+      triangleShape.lineTo(-1, -1);
+      triangleShape.lineTo(1, -1);
+      triangleShape.lineTo(0, 1);
+      
+      const triangleGeometry = new THREE.ShapeGeometry(triangleShape);
+      const triangle = new THREE.Mesh(triangleGeometry, bronzeMaterial);
+      triangle.position.set(3, -1, 5);
+      triangle.scale.set(0.8, 0.8, 0.8);
+      group.add(triangle);
+      
+      // Circle inside triangle
+      const circleGeometry = new THREE.CircleGeometry(0.4, 32);
+      const circle = new THREE.Mesh(circleGeometry, bronzeMaterial);
+      circle.position.set(3, -1, 5.1);
+      group.add(circle);
+      
+      // 4. Trident/staff
+      const staffGeometry = new THREE.CylinderGeometry(0.1, 0.1, 5, 8);
+      const staff = new THREE.Mesh(staffGeometry, bronzeMaterial);
+      staff.position.set(-2, 0, -3);
+      staff.rotation.z = Math.PI / 12;
+      group.add(staff);
+      
+      // Trident prongs
+      const middleProngGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 8);
+      const middleProngs = new THREE.Mesh(middleProngGeometry, bronzeMaterial);
+      middleProngs.position.set(-2 + Math.sin(Math.PI/12) * 2.5, 
+                              0 + Math.cos(Math.PI/12) * 2.5, 
+                              -3);
+      middleProngs.rotation.z = Math.PI / 12;
+      group.add(middleProngs);
+      
+      const leftProngGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.8, 8);
+      const leftProngs = new THREE.Mesh(leftProngGeometry, bronzeMaterial);
+      leftProngs.position.set(-2 + Math.sin(Math.PI/12) * 2.3 - 0.25, 
+                           0 + Math.cos(Math.PI/12) * 2.3 + 0.1, 
+                           -3);
+      leftProngs.rotation.z = Math.PI / 6;
+      group.add(leftProngs);
+      
+      const rightProngGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.8, 8);
+      const rightProngs = new THREE.Mesh(rightProngGeometry, bronzeMaterial);
+      rightProngs.position.set(-2 + Math.sin(Math.PI/12) * 2.3 + 0.25, 
+                            0 + Math.cos(Math.PI/12) * 2.3 + 0.1, 
+                            -3);
+      rightProngs.rotation.z = -Math.PI / 15;
+      group.add(rightProngs);
+      
+      return group;
+    };
+    
+    const encyclopediaSymbols = createEncyclopediaSymbols();
+    scene.add(encyclopediaSymbols);
+    
+    // Position camera
+    camera.position.z = 15;
+    
+    // Animation loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+      
+      // Rotate the entire symbol group slowly
+      encyclopediaSymbols.rotation.y += 0.002;
+      encyclopediaSymbols.rotation.x += 0.0005;
+      
+      // Gentle floating effect
+      const time = Date.now() * 0.001;
+      encyclopediaSymbols.position.y = Math.sin(time) * 0.3;
+      
+      renderer.render(scene, camera);
+    };
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Filter tag functionality
+    document.querySelectorAll('.filter-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        // Find parent filter options
+        const filterOptions = this.parentElement;
+        
+        // Remove active class from all siblings
+        filterOptions.querySelectorAll('.filter-tag').forEach(t => {
+          t.classList.remove('active');
+        });
+        
+        // Add active class to clicked tag
+        this.classList.add('active');
+        
+        // Here you would normally implement actual filtering
+        // For demo purposes, we'll just log the filter
+        console.log(`Filtering by: ${this.textContent}`);
+      });
+    });
+    
+    // Letter navigation functionality
+    document.querySelectorAll('.letter-navigation a').forEach(letter => {
+      letter.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all letters
+        document.querySelectorAll('.letter-navigation a').forEach(l => {
+          l.classList.remove('active');
+        });
+        
+        // Add active class to clicked letter
+        this.classList.add('active');
+        
+        // Here you would implement letter filtering
+        console.log(`Filtering by letter: ${this.textContent}`);
+      });
+    });
+    
+    // Search functionality
+    document.querySelector('.search-button').addEventListener('click', function() {
+      const searchTerm = document.querySelector('.search-input').value.trim();
+      if (searchTerm) {
+        console.log(`Searching for: ${searchTerm}`);
+        // Implement search functionality here
+        alert(`Searching for: ${searchTerm} (Demo only)`);
+      }
+    });
+    
+    // Start animation
+    animate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Mythic Deities</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+      text-decoration: none;
+    }
+    
+    .login-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    
+    .login-form {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .form-header h1 {
+      color: #d4803c;
+      margin-bottom: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #d4803c;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .submit-btn:hover {
+      background-color: #b36a30;
+    }
+    
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .form-footer a {
+      color: #d4803c;
+      text-decoration: none;
+    }
+    
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      color: #e74c3c;
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+    }
+    
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 20px 10%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="homepage.html" class="logo">mythic.dei</a>
+  </header>
+  
+  <div class="login-container">
+    <div class="login-form">
+      <div class="form-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to continue your mythological journey</p>
+      </div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="submit-btn">Sign In</button>
+        
+        <div id="errorMessage" class="error-message">
+          Invalid email or password. Please try again.
+        </div>
+      </form>
+      
+      <div class="form-footer">
+        <p>Don't have an account? <a href="#">Sign up</a></p>
+        <p><a href="#">Forgot password?</a></p>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    <p>&copy; 2025 Mythic Deities. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Check if user is already logged in
+    if (localStorage.getItem('loggedInUser')) {
+      // Redirect to the saved redirect URL or homepage
+      const redirectURL = localStorage.getItem('redirectAfterLogin') || 'homepage.html';
+      window.location.href = redirectURL;
+    }
+    
+    // Handle login form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      // Simple validation - for a real site, you'd validate against a server
+      if (email && password) {
+        // Store login info in localStorage
+        localStorage.setItem('loggedInUser', email);
+        
+        // Get the redirect URL (if any) or default to homepage
+        const redirectURL = localStorage.getItem('redirectAfterLogin') || 'homepage.html';
+        
+        // Clear the redirect URL from localStorage
+        localStorage.removeItem('redirectAfterLogin');
+        
+        // Redirect to the appropriate page
+        window.location.href = redirectURL;
+      } else {
+        // Show error message
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

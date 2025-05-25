@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mythic Deities - Home</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav a {
+      text-decoration: none;
+      color: #3a3a3a;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .nav a:hover {
+      color: #d4803c;
+    }
+    
+    .nav a.active {
+      color: #d4803c;
+      font-weight: bold;
+    }
+    
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .hero {
+      background-image: url('/api/placeholder/1200/400');
+      background-size: cover;
+      background-position: center;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+    
+    .cta-buttons {
+      margin-top: 30px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background-color: #d4803c;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: #b36a30;
+    }
+    
+    .btn.transparent {
+      background-color: transparent;
+      border: 2px solid white;
+    }
+    
+    .btn.transparent:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    
+    .section-header {
+      text-align: center;
+      padding: 60px 0 30px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-header h2 {
+      font-size: 36px;
+      font-weight: normal;
+      margin-bottom: 10px;
+    }
+    
+    .section-subtitle {
+      color: #888;
+    }
+    
+    .pantheons-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 40px 10%;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .pantheon-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 300px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    
+    .pantheon-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .pantheon-image {
+      height: 150px;
+      background-color: #d4803c;
+      background-image: url('/api/placeholder/300/150');
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .pantheon-content {
+      padding: 20px;
+    }
+    
+    .pantheon-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .featured-section {
+      padding: 60px 10%;
+      background-color: rgba(250, 243, 236, 0.9);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .featured-header {
+      margin-bottom: 40px;
+    }
+    
+    .featured-header h2 {
+      font-size: 32px;
+      font-weight: normal;
+      margin-bottom: 10px;
+    }
+    
+    .featured-subtitle {
+      color: #888;
+    }
+    
+    .featured-content {
+      display: flex;
+      gap: 30px;
+    }
+    
+    .featured-text {
+      flex: 1;
+    }
+    
+    .featured-images {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .featured-image {
+      height: 150px;
+      background-color: #d4803c;
+      border-radius: 5px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('/api/placeholder/200/150');
+    }
+    
+    .deity-icon {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 18px;
+    }
+    
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .footer-col {
+      flex: 1;
+      padding: 0 20px;
+    }
+    
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: #d4803c;
+    }
+    
+    .newsletter {
+      margin-top: 20px;
+    }
+    
+    .newsletter-input {
+      display: flex;
+    }
+    
+    .newsletter-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    .newsletter-input button {
+      padding: 10px 15px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .newsletter-input button:hover {
+      background-color: #b36a30;
+    }
+    
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .social-icon:hover {
+      background-color: #d4803c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <header class="header">
+    <div class="logo">mythic.dei</div>
+    <nav class="nav">
+      <a href="#" class="active">Home</a>
+      <a href="pantheons.html">Pantheons</a>
+      <a href="deities.html">Deities</a>
+      <a href="encyclopedia.html">Encyclopedia</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="icons">
+      <span>🔍</span>
+      <span>🛒</span>
+      <span>👤</span>
+    </div>
+  </header>
+  
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Mythic Deities</h1>
+      <p class="subtitle">Discover the divine powers that shaped human history and culture</p>
+      <div class="cta-buttons">
+        <a href="pantheons.html" class="btn">Explore Pantheons</a>
+        <a href="encyclopedia.html" class="btn transparent">Learn More</a>
+      </div>
+    </div>
+  </section>
+  
+  <section class="section-header">
+    <h2>Popular Pantheons</h2>
+    <p class="section-subtitle">Discover the powerful gods and goddesses from mythologies around the world</p>
+  </section>
+  
+  <section class="pantheons-container">
+    <div class="pantheon-card">
+      <div class="pantheon-image"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Greek Pantheon</h3>
+        <p>The Olympian gods ruled from Mount Olympus under the leadership of Zeus. Their myths have influenced Western civilization for millennia.</p>
+        <a href="pantheons.html#greek" class="btn">Explore</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card">
+      <div class="pantheon-image"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Norse Pantheon</h3>
+        <p>The Aesir and Vanir gods lived in Asgard, led by Odin the All-Father. Their tales of bravery and cunning captivated the Nordic people.</p>
+        <a href="pantheons.html#norse" class="btn">Explore</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card">
+      <div class="pantheon-image"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Egyptian Pantheon</h3>
+        <p>The gods of ancient Egypt were central to everyday life, with Ra, Osiris, and Isis among the most prominent deities in their complex mythology.</p>
+        <a href="pantheons.html#egyptian" class="btn">Explore</a>
+      </div>
+    </div>
+  </section>
+  
+  <section class="featured-section">
+    <div class="featured-header">
+      <h2>Featured Deities</h2>
+      <p class="featured-subtitle">Learn about the most influential divine figures from world mythology</p>
+    </div>
+    <div class="featured-content">
+      <div class="featured-text">
+        <p>Delve into the rich tapestry of world mythology with our comprehensive collection. Each deity profile includes historical context, cultural significance, symbolic meanings, and artistic representations through the ages.</p>
+        <p>Explore the fascinating stories of gods and goddesses from around the world, from well-known figures like Zeus and Thor to lesser-known deities from African, Asian, and Native American traditions.</p>
+        <ul style="margin-top: 20px; margin-left: 20px;">
+          <li><span class="deity-icon">⚡</span> <strong>Zeus</strong> - Greek king of gods and ruler of Mount Olympus</li>
+          <li><span class="deity-icon">🔨</span> <strong>Thor</strong> - Norse god of thunder, lightning, and protection</li>
+          <li><span class="deity-icon">🐺</span> <strong>Anubis</strong> - Egyptian god of mummification and the afterlife</li>
+          <li><span class="deity-icon">🔱</span> <strong>Shiva</strong> - Hindu god of destruction and transformation</li>
+        </ul>
+        <a href="deities.html" class="btn" style="margin-top: 20px;">View All Deities</a>
+      </div>
+      <div class="featured-images">
+        <div class="featured-image"></div>
+        <div class="featured-image"></div>
+        <div class="featured-image"></div>
+        <div class="featured-image"></div>
+      </div>
+    </div>
+  </section>
+  
+  <footer class="footer">
+    <div class="footer-col">
+      <h4 class="footer-title">Navigation</h4>
+      <ul class="footer-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="pantheons.html">Pantheons</a></li>
+        <li><a href="deities.html">Deities</a></li>
+        <li><a href="encyclopedia.html">Encyclopedia</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Popular Pantheons</h4>
+      <ul class="footer-links">
+        <li><a href="pantheons.html#greek">Greek</a></li>
+        <li><a href="pantheons.html#norse">Norse</a></li>
+        <li><a href="pantheons.html#egyptian">Egyptian</a></li>
+        <li><a href="pantheons.html#hindu">Hindu</a></li>
+        <li><a href="pantheons.html#aztec">Aztec</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Connect With Us</h4>
+      <div class="social-icons">
+        <a href="#" class="social-icon">f</a>
+        <a href="#" class="social-icon">t</a>
+        <a href="#" class="social-icon">in</a>
+        <a href="#" class="social-icon">ig</a>
+      </div>
+      <div class="newsletter">
+        <p>Subscribe to our newsletter:</p>
+        <div class="newsletter-input">
+          <input type="email" placeholder="Enter your email">
+          <button>→</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Three.js setup for the rotating 3D sculpture
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Lighting setup
+    const ambientLight = new THREE.AmbientLight(0xd4803c, 0.4);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+
+    const backLight = new THREE.DirectionalLight(0xd4803c, 0.5);
+    backLight.position.set(-5, -5, -5);
+    scene.add(backLight);
+
+    // Create a Greek/Roman deity sculpture
+    const createDeitySculpture = () => {
+      const group = new THREE.Group();
+      
+      // Material with a marble/bronze look
+      const sculptMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0xd4803c, // Bronze-gold color to match site theme
+        shininess: 60,
+        specular: 0xffffff
+      });
+      
+      // Head
+      const headGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+      const head = new THREE.Mesh(headGeometry, sculptMaterial);
+      head.position.y = 4;
+      group.add(head);
+      
+      // Neck
+      const neckGeometry = new THREE.CylinderGeometry(0.4, 0.5, 0.7, 16);
+      const neck = new THREE.Mesh(neckGeometry, sculptMaterial);
+      neck.position.y = 3.3;
+      group.add(neck);
+      
+      // Crown/helmet (for Zeus/Athena style)
+      const crownGeometry = new THREE.CylinderGeometry(0.9, 0.8, 0.5, 16);
+      const crown = new THREE.Mesh(crownGeometry, sculptMaterial);
+      crown.position.y = 4.7;
+      group.add(crown);
+      
+      // Spikes on crown
+      for (let i = 0; i < 7; i++) {
+        const spikeGeometry = new THREE.ConeGeometry(0.15, 0.5, 8);
+        const spike = new THREE.Mesh(spikeGeometry, sculptMaterial);
+        spike.position.y = 5.1;
+        spike.position.x = 0.7 * Math.cos(i * Math.PI / 3.5);
+        spike.position.z = 0.7 * Math.sin(i * Math.PI / 3.5);
+        group.add(spike);
+      }
+      
+      // Torso
+      const torsoGeometry = new THREE.CylinderGeometry(1.2, 1.0, 3, 16);
+      const torso = new THREE.Mesh(torsoGeometry, sculptMaterial);
+      torso.position.y = 1.5;
+      group.add(torso);
+      
+      // Shoulder pads (armor)
+      const leftShoulderGeometry = new THREE.SphereGeometry(0.6, 16, 16);
+      const leftShoulder = new THREE.Mesh(leftShoulderGeometry, sculptMaterial);
+      leftShoulder.position.set(-1.2, 2.8, 0);
+      group.add(leftShoulder);
+      
+      const rightShoulderGeometry = new THREE.SphereGeometry(0.6, 16, 16);
+      const rightShoulder = new THREE.Mesh(rightShoulderGeometry, sculptMaterial);
+      rightShoulder.position.set(1.2, 2.8, 0);
+      group.add(rightShoulder);
+      
+      // Right arm holding a staff/lightning bolt
+      const upperArmGeometry = new THREE.CylinderGeometry(0.25, 0.2, 1.5, 8);
+      const upperArm = new THREE.Mesh(upperArmGeometry, sculptMaterial);
+      upperArm.position.set(1.2, 2, 0);
+      upperArm.rotation.z = Math.PI / 4; // Angle the arm outward
+      group.add(upperArm);
+      
+      // Staff/spear/thunderbolt
+      const staffGeometry = new THREE.CylinderGeometry(0.08, 0.08, 5, 8);
+      const staff = new THREE.Mesh(staffGeometry, sculptMaterial);
+      staff.position.set(2, 1.2, 0);
+      staff.rotation.z = Math.PI / 2.5; // Angle the staff
+      group.add(staff);
+      
+      // Bottom half (draped cloth)
+      const lowerBodyGeometry = new THREE.CylinderGeometry(1.0, 1.5, 3, 16);
+      const lowerBody = new THREE.Mesh(lowerBodyGeometry, sculptMaterial);
+      lowerBody.position.y = -1;
+      group.add(lowerBody);
+      
+      // Base pedestal
+      const baseGeometry = new THREE.CylinderGeometry(1.8, 1.8, 0.7, 16);
+      const baseMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0xb36a30,
+        shininess: 30
+      });
+      const base = new THREE.Mesh(baseGeometry, baseMaterial);
+      base.position.y = -3;
+      group.add(base);
+      
+      // Scale down the sculpture
+      group.scale.set(0.8, 0.8, 0.8);
+      
+      return group;
+    };
+
+    const deitySculpture = createDeitySculpture();
+    scene.add(deitySculpture);
+
+    // Position camera
+    camera.position.z = 10;
+
+    // Animation
+    const animate = () => {
+      requestAnimationFrame(animate);
+      
+      // Rotate the sculpture
+      deitySculpture.rotation.y += 0.005;
+      
+      renderer.render(scene, camera);
+    };
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Interaction with scroll
+    let lastScrollTop = 0;
+    
+    window.addEventListener('scroll', () => {
+      const st = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Adjust rotation based on scroll direction
+      if (st > lastScrollTop) {
+        // Scrolling down
+        deitySculpture.rotation.y += 0.03;
+        deitySculpture.rotation.x += 0.01;
+      } else {
+        // Scrolling up
+        deitySculpture.rotation.y -= 0.03;
+        deitySculpture.rotation.x -= 0.01;
+      }
+      
+      lastScrollTop = st <= 0 ? 0 : st;
+    });
+
+    // Start animation
+    animate();
+  </script>
+
+  <!-- Authentication script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to check if user is logged in
+      function isLoggedIn() {
+        return localStorage.getItem('loggedInUser') !== null;
+      }
+      
+      // Get all navigation elements
+      const exploreButtons = document.querySelectorAll('.btn');
+      const navLinks = document.querySelectorAll('.nav a:not(.active)');
+      const footerLinks = document.querySelectorAll('.footer-links a');
+      
+      // Update UI based on login status
+      function updateUI() {
+        const userIcon = document.querySelector('.icons span:nth-child(3)');
+        
+        if (isLoggedIn()) {
+          // User is logged in - update the user icon
+          if (userIcon) {
+            const username = localStorage.getItem('loggedInUser').split('@')[0];
+            userIcon.textContent = '👤 ' + username;
+            userIcon.style.cursor = 'pointer';
+            
+            // Remove any existing click event listener
+            userIcon.replaceWith(userIcon.cloneNode(true));
+            
+            // Get the fresh reference
+            const newUserIcon = document.querySelector('.icons span:nth-child(3)');
+            
+            // Add click event to show dropdown
+            newUserIcon.addEventListener('click', function() {
+              toggleUserDropdown();
+            });
+          }
+        }
+      }
+      
+      // Function to create and toggle user dropdown
+      function toggleUserDropdown() {
+        // Check if dropdown already exists
+        let dropdown = document.getElementById('user-dropdown');
+        
+        if (dropdown) {
+          // Toggle display
+          dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+          return;
+        }
+        
+        // Create dropdown if it doesn't exist
+        dropdown = document.createElement('div');
+        dropdown.id = 'user-dropdown';
+        dropdown.style.position = 'absolute';
+        dropdown.style.right = '10px';
+        dropdown.style.top = '60px';
+        dropdown.style.backgroundColor = 'white';
+        dropdown.style.border = '1px solid #ccc';
+        dropdown.style.borderRadius = '5px';
+        dropdown.style.padding = '10px';
+        dropdown.style.zIndex = '100';
+        dropdown.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+        
+        // Show user email
+        const userInfo = document.createElement('div');
+        userInfo.textContent = localStorage.getItem('loggedInUser');
+        userInfo.style.padding = '5px';
+        userInfo.style.marginBottom = '10px';
+        dropdown.appendChild(userInfo);
+        
+        // Add logout button
+        const logoutBtn = document.createElement('div');
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.style.color = '#d4803c';
+        logoutBtn.style.cursor = 'pointer';
+        logoutBtn.style.padding = '5px';
+        
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('loggedInUser');
+          localStorage.removeItem('redirectAfterLogin');
+          window.location.reload();
+        });
+        
+        dropdown.appendChild(logoutBtn);
+        document.body.appendChild(dropdown);
+        
+        // Close dropdown when clicking elsewhere
+        document.addEventListener('click', function(e) {
+          if (e.target !== dropdown && !dropdown.contains(e.target) && 
+              e.target !== document.querySelector('.icons span:nth-child(3)')) {
+            dropdown.style.display = 'none';
+          }
+        });
+      }
+      
+      // Handle navigation based on login status
+      if (!isLoggedIn()) {
+        // If not logged in, redirect to login page when clicking navigation
+        const handleNavClick = function(e) {
+          e.preventDefault();
+          
+          // Store the original destination URL to redirect after login
+          const originalDestination = e.currentTarget.getAttribute('href');
+          localStorage.setItem('redirectAfterLogin', originalDestination);
+          
+          // Redirect to login page
+          window.location.href = 'login.html';
+        };
+        
+        // Add click event listeners to navigation elements
+        exploreButtons.forEach(button => {
+          button.addEventListener('click', handleNavClick);
+        });
+        
+        navLinks.forEach(link => {
+          link.addEventListener('click', handleNavClick);
+        });
+        
+        footerLinks.forEach(link => {
+          link.addEventListener('click', handleNavClick);
+        });
+        
+        // Make user icon redirect to login
+        const userIcon = document.querySelector('.icons span:nth-child(3)');
+        if (userIcon) {
+          userIcon.style.cursor = 'pointer';
+          userIcon.addEventListener('click', function() {
+            window.location.href = 'login.html';
+          });
+        }
+      }
+      
+      // Update the UI on page load
+      updateUI();
+    });
+  </script>
+</body>
+</html>

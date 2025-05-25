@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mythic Deities - Pantheons</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+
+    
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav a {
+      text-decoration: none;
+      color: #3a3a3a;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .nav a:hover {
+      color: #d4803c;
+    }
+    
+    .nav a.active {
+      color: #d4803c;
+      font-weight: bold;
+    }
+    
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .hero {
+        background-image: url('../images/your-image.jpg'); 
+      background-size: cover;
+      background-position: center;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+    
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+    
+    .filters {
+      background-color: white;
+      padding: 20px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .filter-label {
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .filter-select {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+      font-size: 14px;
+    }
+    
+    .pantheons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+      padding: 50px 10%;
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .pantheon-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    
+    .pantheon-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .pantheon-image {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .greek-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #5D8CAE;
+    }
+    
+    .norse-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #607D8B;
+    }
+    
+    .egyptian-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #D4B26A;
+    }
+    
+    .hindu-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #D45D5D;
+    }
+    
+    .aztec-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #8BC34A;
+    }
+    
+    .celtic-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #4DB6AC;
+    }
+    
+    .japanese-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #FF5722;
+    }
+    
+    .roman-bg {
+        background-image: url('../images/your-image.jpg'); 
+      background-color: #9C27B0;
+    }
+    
+    .pantheon-tag {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+    }
+    
+    .pantheon-content {
+      padding: 25px;
+    }
+    
+    .pantheon-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .pantheon-region {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .deity-count {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .pantheon-stats {
+      display: flex;
+      gap: 15px;
+      margin: 15px 0;
+    }
+    
+    .stat {
+      background-color: #f9f1ea;
+      padding: 10px;
+      border-radius: 5px;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #d4803c;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 15px;
+      transition: background-color 0.3s;
+      text-align: center;
+      width: 100%;
+    }
+    
+    .btn:hover {
+      background-color: #b36a30;
+    }
+    
+    .featured-pantheon {
+      background-color: rgba(250, 243, 236, 0.9);
+      padding: 60px 10%;
+      margin: 30px 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .featured-header {
+      margin-bottom: 40px;
+    }
+    
+    .featured-header h2 {
+      font-size: 32px;
+      font-weight: normal;
+      margin-bottom: 10px;
+      color: #d4803c;
+    }
+    
+    .featured-subtitle {
+      color: #888;
+    }
+    
+    .featured-content {
+      display: flex;
+      gap: 50px;
+    }
+    
+    .featured-text {
+      flex: 1;
+    }
+    
+    .featured-text h3 {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #d4803c;
+    }
+    
+    .deity-list {
+      margin: 20px 0;
+    }
+    
+    .deity-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .deity-icon {
+      width: 30px;
+      height: 30px;
+      background-color: #d4803c;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+    
+    .deity-name {
+      font-weight: bold;
+    }
+    
+    .deity-domain {
+      margin-left: 10px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+.featured-image {
+  flex: 1;
+  height: 400px;
+  background-image: url('../images/your-image.jpg'); /* Replace with actual filename */
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  position: relative;
+}
+    
+    .featured-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+    }
+    
+    .featured-caption {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .footer-col {
+      flex: 1;
+      padding: 0 20px;
+    }
+    
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: #d4803c;
+    }
+    
+    .newsletter {
+      margin-top: 20px;
+    }
+    
+    .newsletter-input {
+      display: flex;
+    }
+    
+    .newsletter-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    .newsletter-input button {
+      padding: 10px 15px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .newsletter-input button:hover {
+      background-color: #b36a30;
+    }
+    
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .social-icon:hover {
+      background-color: #d4803c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <header class="header">
+    <div class="logo">mythic.dei</div>
+    <nav class="nav">
+      <a href="homepage.html">Home</a>
+      <a href="pantheons.html" class="active">Pantheons</a>
+      <a href="deities.html">Deities</a>
+      <a href="encyclopedia.html">Encyclopedia</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="icons">
+      <span>🔍</span>
+      <span>🛒</span>
+      <span>👤</span>
+    </div>
+  </header>
+  
+  <section class="hero">
+    <div class="hero-content">
+      <h1>World Pantheons</h1>
+      <p class="subtitle">Explore the divine hierarchies from ancient civilizations across the globe and discover how these powerful beings shaped human history, culture, and beliefs</p>
+    </div>
+  </section>
+  
+  <section class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Filter by:</span>
+      <select class="filter-select">
+        <option>All Regions</option>
+        <option>Europe</option>
+        <option>Mediterranean</option>
+        <option>Middle East</option>
+        <option>Asia</option>
+        <option>Africa</option>
+        <option>Americas</option>
+        <option>Pacific</option>
+      </select>
+      <select class="filter-select">
+        <option>All Time Periods</option>
+        <option>Ancient (3000 BCE - 500 BCE)</option>
+        <option>Classical (500 BCE - 500 CE)</option>
+        <option>Medieval (500 CE - 1500 CE)</option>
+        <option>Modern (Still Practiced)</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Sort by:</span>
+      <select class="filter-select">
+        <option>Popularity</option>
+        <option>Alphabetical</option>
+        <option>Age (Oldest First)</option>
+        <option>Age (Newest First)</option>
+        <option>Number of Deities</option>
+      </select>
+    </div>
+  </section>
+  
+  <section class="pantheons-grid">
+    <div class="pantheon-card" id="greek">
+      <div class="pantheon-image greek-bg">
+        <div class="pantheon-tag">Most Popular</div>
+      </div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Greek Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> Mediterranean | Ancient Greece
+        </div>
+        <p>The Greek pantheon consists of the Olympian gods who resided on Mount Olympus under the leadership of Zeus. Their complex myths and legends dramatically influenced Western civilization and continue to inspire art and literature today.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">100+</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">1200 BCE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: Zeus, Athena, Apollo, Aphrodite</span>
+        </div>
+        <a href="pantheons/greek.html" class="btn">Explore Greek Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="norse">
+      <div class="pantheon-image norse-bg">
+        <div class="pantheon-tag">Trending</div>
+      </div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Norse Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> Northern Europe | Scandinavia
+        </div>
+        <p>The Norse gods were divided into two tribes, the warlike Aesir and the fertility-focused Vanir. Living in Asgard under Odin's leadership, these deities were destined to face Ragnarök, the apocalyptic battle that would end the world.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">14</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">60+</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">700 CE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: Odin, Thor, Loki, Freya</span>
+        </div>
+        <a href="pantheons/norse.html" class="btn">Explore Norse Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="egyptian">
+      <div class="pantheon-image egyptian-bg"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Egyptian Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> North Africa | Ancient Egypt
+        </div>
+        <p>Egyptian deities were central to everyday life in ancient Egypt, with complex relationships and forms that often included animal heads on human bodies. The myths of Osiris, Isis, and Horus form one of history's oldest religious narratives.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">20</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">200+</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">3100 BCE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: Ra, Osiris, Isis, Anubis</span>
+        </div>
+        <a href="pantheons/egyptian.html" class="btn">Explore Egyptian Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="hindu">
+      <div class="pantheon-image hindu-bg"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Hindu Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> South Asia | India
+        </div>
+        <p>Hindu deities represent various aspects of the supreme reality, Brahman. The Trimurti of Brahma (creator), Vishnu (preserver), and Shiva (destroyer) form the core, with each deity having multiple forms and incarnations throughout cosmic cycles.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">33</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">330M</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">1500 BCE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: Vishnu, Shiva, Lakshmi, Ganesh</span>
+        </div>
+        <a href="pantheons/hindu.html" class="btn">Explore Hindu Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="aztec">
+      <div class="pantheon-image aztec-bg"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Aztec Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> Mesoamerica | Central Mexico
+        </div>
+        <p>The Aztec religion featured deities who required blood sacrifice to sustain the universe. Their complex cosmology included multiple creations and destructions of the world, with gods representing natural forces and celestial bodies.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">15</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">100+</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">1300 CE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: Huitzilopochtli, Quetzalcoatl, Tlaloc</span>
+        </div>
+        <a href="pantheons/aztec.html" class="btn">Explore Aztec Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="celtic">
+      <div class="pantheon-image celtic-bg"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Celtic Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> Western Europe | British Isles & Gaul
+        </div>
+        <p>Celtic deities were deeply connected to the natural world, with gods and goddesses associated with specific rivers, forests, and hills. The Tuatha Dé Danann were a supernatural race of beings who became the main pantheon of pre-Christian Ireland.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">50+</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">500 BCE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: The Dagda, Lugh, Morrigan, Cernunnos</span>
+        </div>
+        <a href="pantheons/celtic.html" class="btn">Explore Celtic Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="japanese">
+      <div class="pantheon-image japanese-bg"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Japanese Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> East Asia | Japan
+        </div>
+        <p>Japanese Shinto mythology features countless kami (divine spirits) that inhabit natural features. The creation myth begins with Izanagi and Izanami creating the Japanese islands, and includes the sun goddess Amaterasu, from whom the imperial family claims descent.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Major Kami</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">8M+</div>
+            <div class="stat-label">Minor Kami</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">500 BCE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable kami: Amaterasu, Susanoo, Izanagi, Tsukuyomi</span>
+        </div>
+        <a href="pantheons/japanese.html" class="btn">Explore Japanese Pantheon</a>
+      </div>
+    </div>
+    
+    <div class="pantheon-card" id="roman">
+      <div class="pantheon-image roman-bg"></div>
+      <div class="pantheon-content">
+        <h3 class="pantheon-title">Roman Pantheon</h3>
+        <div class="pantheon-region">
+          <span>📍</span> Mediterranean | Ancient Rome
+        </div>
+        <p>The Roman gods were adapted from Greek deities but with distinct Roman characteristics and roles. The state religion was deeply practical, focusing on contractual relationships with gods to ensure Rome's success and prosperity.</p>
+        <div class="pantheon-stats">
+          <div class="stat">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Major Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">100+</div>
+            <div class="stat-label">Minor Deities</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">753 BCE</div>
+            <div class="stat-label">Est. Origin</div>
+          </div>
+        </div>
+        <div class="deity-count">
+          <span>Notable deities: Jupiter, Mars, Venus, Mercury</span>
+        </div>
+        <a href="pantheons/roman.html" class="btn">Explore Roman Pantheon</a>
+      </div>
+    </div>
+  </section>
+  
+  <section class="featured-pantheon">
+    <div class="featured-header">
+      <h2>Featured Pantheon: Norse Mythology</h2>
+      <p class="featured-subtitle">Delve deeper into the rich world of Norse mythology and its enduring influence on modern culture</p>
+    </div>
+    <div class="featured-content">
+      <div class="featured-text">
+        <h3>Gods of the Frozen North</h3>
+        <p>Norse mythology has experienced a remarkable resurgence in popular culture, from Marvel's Thor movies to video games like God of War. But the authentic myths of these Northern European deities reveal a complex cosmology and profound philosophical insights that go far beyond modern adaptations.</p>
+        <p>The Norse gods were not immortal but destined to die at Ragnarök, making their tales uniquely fatalistic among world mythologies. Despite knowing their doom, they faced their fate with courage and resolve—values deeply embedded in Norse culture.</p>
+        
+        <div class="deity-list">
+          <div class="deity-item">
+            <div class="deity-icon">⚡</div>
+            <span class="deity-name">Thor</span>
+            <span class="deity-domain">God of Thunder and Protection</span>
+          </div>
+          <div class="deity-item">
+            <div class="deity-icon">👁️</div>
+            <span class="deity-name">Odin</span>
+            <span class="deity-domain">All-Father, God of Wisdom and War</span>
+          </div>
+          <div class="deity-item">
+            <div class="deity-icon">🔥</div>
+            <span class="deity-name">Loki</span>
+            <span class="deity-domain">God of Mischief and Trickery</span>
+          </div>
+          <div class="deity-item">
+            <div class="deity-icon">💖</div>
+            <span class="deity-name">Freya</span>
+            <span class="deity-domain">Goddess of Love, Beauty, and Battle</span>
+          </div>
+        </div>
+        
+        <a href="pantheons/norse.html" class="btn" style="width: auto; display: inline-block;">Explore Norse Mythology in Depth</a>
+      </div>
+      <div class="featured-image">
+        <div class="featured-overlay">
+          <div class="featured-caption">Thor's battle against the giants, as depicted in a 19th-century illustration by Mårten Eskil Winge</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <footer class="footer">
+    <div class="footer-col">
+      <h4 class="footer-title">Navigation</h4>
+      <ul class="footer-links">
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="pantheons.html">Pantheons</a></li>
+        <li><a href="deities.html">Deities</a></li>
+        <li><a href="encyclopedia.html">Encyclopedia</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Popular Pantheons</h4>

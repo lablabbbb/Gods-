@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mythic Deities - Deities</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+   
+    body {
+      background-color: #fcf7f2;
+      color: #3a3a3a;
+    }
+   
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+   
+    .header {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+   
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #d4803c;
+    }
+   
+    .nav {
+      display: flex;
+      gap: 25px;
+    }
+   
+    .nav a {
+      text-decoration: none;
+      color: #3a3a3a;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+   
+    .nav a:hover {
+      color: #d4803c;
+    }
+   
+    .nav a.active {
+      color: #d4803c;
+      font-weight: bold;
+    }
+   
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+   
+    .page-title {
+      background-color: #d4803c;
+      color: white;
+      padding: 60px 10%;
+      text-align: center;
+    }
+   
+    .page-title h1 {
+      font-size: 48px;
+      margin-bottom: 15px;
+      font-weight: normal;
+    }
+   
+    .page-subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+   
+    .filters {
+      background-color: white;
+      padding: 20px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+   
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+   
+    .filter-label {
+      font-size: 14px;
+      color: #888;
+    }
+   
+    .filter-select {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+      color: #3a3a3a;
+    }
+   
+    .search-box {
+      display: flex;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+   
+    .search-box input {
+      padding: 8px 15px;
+      border: none;
+      outline: none;
+      width: 200px;
+    }
+   
+    .search-box button {
+      padding: 8px 15px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+   
+    .deity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 50px 10%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+   
+    .deity-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+      position: relative;
+    }
+   
+    .deity-card:hover {
+      transform: translateY(-5px);
+    }
+   
+    .deity-image {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+   
+    .deity-pantheon {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background-color: rgba(212, 128, 60, 0.9);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+   
+    .deity-domain {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+    }
+   
+    .deity-content {
+      padding: 20px;
+    }
+   
+    .deity-name {
+      font-size: 20px;
+      margin-bottom: 5px;
+      color: #d4803c;
+    }
+   
+    .deity-title {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 15px;
+    }
+   
+    .deity-description {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+      color: #555;
+    }
+   
+    .deity-stats {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+      font-size: 12px;
+      color: #888;
+    }
+   
+    .deity-symbol {
+      font-size: 24px;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+   
+    .pagination {
+      display: flex;
+      justify-content: center;
+      padding: 30px 0 60px;
+      gap: 10px;
+    }
+   
+    .page-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+   
+    .page-button:hover {
+      background-color: #f5f5f5;
+    }
+   
+    .page-button.active {
+      background-color: #d4803c;
+      color: white;
+      border-color: #d4803c;
+    }
+   
+    .newsletter-section {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 50px 10%;
+      text-align: center;
+    }
+   
+    .newsletter-title {
+      font-size: 32px;
+      margin-bottom: 15px;
+      color: #d4803c;
+    }
+   
+    .newsletter-description {
+      max-width: 600px;
+      margin: 0 auto 25px;
+      opacity: 0.9;
+    }
+   
+    .newsletter-form {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+    }
+   
+    .newsletter-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+    }
+   
+    .newsletter-button {
+      padding: 12px 25px;
+      background-color: #d4803c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+   
+    .newsletter-button:hover {
+      background-color: #b36a30;
+    }
+   
+    .footer {
+      background-color: #3a3a3a;
+      color: white;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+    }
+   
+    .footer-col {
+      flex: 1;
+      padding: 0 20px;
+    }
+   
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d4803c;
+    }
+   
+    .footer-links {
+      list-style: none;
+    }
+   
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+   
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+   
+    .footer-links a:hover {
+      color: #d4803c;
+    }
+   
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+   
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+   
+    .social-icon:hover {
+      background-color: #d4803c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <header class="header">
+    <div class="logo">mythic.dei</div>
+    <nav class="nav">
+      <a href="homepage.html">Home</a>
+      <a href="pantheons.html">Pantheons</a>
+      <a href="deities.html" class="active">Deities</a>
+      <a href="encyclopedia.html">Encyclopedia</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="icons">
+      <span>🔍</span>
+      <span>🛒</span>
+      <span>👤</span>
+    </div>
+  </header>
+ 
+  <section class="page-title">
+    <h1>Divine Entities</h1>
+    <p class="page-subtitle">Explore the powerful gods and goddesses from ancient mythologies around the world</p>
+  </section>
+ 
+  <section class="filters">
+    <div class="filter-group">
+      <div class="filter-label">Filter by:</div>
+      <select class="filter-select" id="pantheon-filter">
+        <option value="all">All Pantheons</option>
+        <option value="greek">Greek</option>
+        <option value="norse">Norse</option>
+        <option value="egyptian">Egyptian</option>
+        <option value="hindu">Hindu</option>
+        <option value="aztec">Aztec</option>
+        <option value="celtic">Celtic</option>
+        <option value="japanese">Japanese</option>
+        <option value="chinese">Chinese</option>
+      </select>
+      <select class="filter-select" id="domain-filter">
+        <option value="all">All Domains</option>
+        <option value="sky">Sky & Weather</option>
+        <option value="war">War & Combat</option>
+        <option value="love">Love & Beauty</option>
+        <option value="wisdom">Wisdom & Knowledge</option>
+        <option value="death">Death & Underworld</option>
+        <option value="fertility">Fertility & Agriculture</option>
+        <option value="sun">Sun & Light</option>
+        <option value="moon">Moon & Night</option>
+        <option value="water">Water & Sea</option>
+      </select>
+    </div>
+    <div class="search-box">
+      <input type="text" placeholder="Search deities...">
+      <button>🔍</button>
+    </div>
+  </section>
+ 
+  <section class="deity-grid">
+    <!-- Zeus -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('images/zeus.jpg');">
+        <div class="deity-pantheon">Greek</div>
+        <div class="deity-domain">Sky & Thunder</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Zeus</h3>
+        <p class="deity-title">King of the Gods</p>
+        <p class="deity-description">Ruler of Mount Olympus and god of the sky, lightning, thunder, law, order, and justice. Zeus was the youngest son of the Titans Cronus and Rhea.</p>
+        <div class="deity-stats">
+          <span>Symbols: ⚡ Thunderbolt, Eagle, Oak</span>
+          <span>Children: 100+</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Thor -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('../images/Thor.jpg');">
+        <div class="deity-pantheon">Norse</div>
+        <div class="deity-domain">Thunder</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Thor</h3>
+        <p class="deity-title">God of Thunder</p>
+        <p class="deity-description">Associated with thunder, lightning, storms, sacred groves, and trees. Thor was the protector of mankind and the god of warriors.</p>
+        <div class="deity-stats">
+          <span>Symbols: 🔨 Mjölnir, Goats</span>
+          <span>Parents: Odin & Jörð</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Anubis -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('images/anubis.jpg');">
+        <div class="deity-pantheon">Egyptian</div>
+        <div class="deity-domain">Death</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Anubis</h3>
+        <p class="deity-title">God of Death & Mummification</p>
+        <p class="deity-description">Protector of graves and conductor of souls to the afterlife. Anubis is depicted as having a jackal-head and was the original god of the dead.</p>
+        <div class="deity-stats">
+          <span>Symbols: 🐺 Jackal, Crook & Flail</span>
+          <span>Parents: Nephthys & Set/Osiris</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Athena -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('images/athena.jpg');">
+        <div class="deity-pantheon">Greek</div>
+        <div class="deity-domain">Wisdom</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Athena</h3>
+        <p class="deity-title">Goddess of Wisdom & War</p>
+        <p class="deity-description">Virgin goddess of wisdom, handicraft, and warfare. Athena was born fully armed from the forehead of her father Zeus.</p>
+        <div class="deity-stats">
+          <span>Symbols: 🦉 Owl, Olive Tree, Aegis</span>
+          <span>Parents: Zeus & Metis</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Odin -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('../images/your-image.jpg');">
+        <div class="deity-pantheon">Norse</div>
+        <div class="deity-domain">Wisdom</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Odin</h3>
+        <p class="deity-title">All-Father</p>
+        <p class="deity-description">God of wisdom, poetry, death, divination, and magic. Odin was the ruler of Asgard and leader of the Aesir gods, known for sacrificing his eye for wisdom.</p>
+        <div class="deity-stats">
+          <span>Symbols: 🐺 Ravens, Wolves, Spear</span>
+          <span>Children: Thor, Baldr, Váli</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Isis -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('../images/isisjpg');">
+        <div class="deity-pantheon">Egyptian</div>
+        <div class="deity-domain">Magic</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Isis</h3>
+        <p class="deity-title">Goddess of Magic & Motherhood</p>
+        <p class="deity-description">Powerful goddess of magic, healing, and protection. Isis resurrected her husband Osiris after he was murdered by his brother Set.</p>
+        <div class="deity-stats">
+          <span>Symbols: 👑 Tyet, Throne, Wings</span>
+          <span>Family: Osiris (husband), Horus (son)</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Poseidon -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('../images/your-image.jpg');">
+        <div class="deity-pantheon">Greek</div>
+        <div class="deity-domain">Sea</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Poseidon</h3>
+        <p class="deity-title">God of the Sea</p>
+        <p class="deity-description">God of the sea, earthquakes, storms, and horses. Poseidon was one of the three most powerful Greek gods along with his brothers Zeus and Hades.</p>
+        <div class="deity-stats">
+          <span>Symbols: 🔱 Trident, Horse, Dolphin</span>
+          <span>Parents: Cronus & Rhea</span>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Freya -->
+    <div class="deity-card">
+      <div class="deity-image" style=" background-image: url('../images/your-image.jpg');">
+        <div class="deity-pantheon">Norse</div>
+        <div class="deity-domain">Love</div>
+      </div>
+      <div class="deity-content">
+        <h3 class="deity-name">Freya</h3>
+        <p class="deity-title">Goddess of Love & War</p>
+        <p class="deity-description">Associated with love, beauty, fertility, sex, war, gold, and seiðr. Freya is the most renowned goddess of the Norse pantheon.</p>
+        <div class="deity-stats">
+          <span>Symbols: 😺 Cats, Falcon, Brisingamen</span>
+          <span>Family: Njörðr (father), Freyr (brother)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <div class="pagination">
+    <a href="#" class="page-button active">1</a>
+    <a href="#" class="page-button">2</a>
+    <a href="#" class="page-button">3</a>
+    <a href="#" class="page-button">4</a>
+    <a href="#" class="page-button">5</a>
+    <a href="#" class="page-button">→</a>
+  </div>
+ 
+  <section class="newsletter-section">
+    <h2 class="newsletter-title">Join Our Divine Journey</h2>
+    <p class="newsletter-description">Subscribe to our newsletter to receive updates on new deity profiles, special features, and exclusive mythology content.</p>
+    <form class="newsletter-form">
+      <input type="email" class="newsletter-input" placeholder="Enter your email address">
+      <button type="submit" class="newsletter-button">Subscribe</button>
+    </form>
+  </section>
+ 
+  <footer class="footer">
+    <div class="footer-col">
+      <h4 class="footer-title">Navigation</h4>
+      <ul class="footer-links">
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="pantheons.html">Pantheons</a></li>
+        <li><a href="deities.html">Deities</a></li>
+        <li><a href="encyclopedia.html">Encyclopedia</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Popular Pantheons</h4>
+      <ul class="footer-links">
+        <li><a href="pantheons.html#greek">Greek</a></li>
+        <li><a href="pantheons.html#norse">Norse</a></li>
+        <li><a href="pantheons.html#egyptian">Egyptian</a></li>
+        <li><a href="pantheons.html#hindu">Hindu</a></li>
+        <li><a href="pantheons.html#aztec">Aztec</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-title">Connect With Us</h4>
+      <div class="social-icons">
+        <a href="#" class="social-icon">f</a>
+        <a href="#" class="social-icon">t</a>
+        <a href="#" class="social-icon">in</a>
+        <a href="#" class="social-icon">ig</a>
+      </div>
+      <div class="newsletter">
+        <p>Subscribe to our newsletter:</p>
+        <div class="newsletter-input">
+          <input type="email" placeholder="Enter your email">
+          <button>→</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+ 
+  <script>
+    // Three.js setup for background visual
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+   
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+   
+    // Add directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+   
+    // Create particles for stars/divine energy effect
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1500;
+   
+    const posArray = new Float32Array(particlesCount * 3);
+    const colorsArray = new Float32Array(particlesCount * 3);
+   
+    // Fill with random positions and colors with golden hue
+    for (let i = 0; i < particlesCount * 3; i+=3) {
+      // Positions - spread throughout the scene
+      posArray[i] = (Math.random() - 0.5) * 50;
+      posArray[i+1] = (Math.random() - 0.5) * 50;
+      posArray[i+2] = (Math.random() - 0.5) * 50;
+     
+      // Colors - variation of gold/bronze to match site theme
+      colorsArray[i] = 0.8 + Math.random() * 0.2; // R: strong
+      colorsArray[i+1] = 0.4 + Math.random() * 0.3; // G: medium
+      colorsArray[i+2] = 0.1 + Math.random() * 0.2; // B: low
+    }
+   
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+   
+    // Material with individual colors
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.05,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8
+    });
+   
+    // Create the particle system
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+   
+    // Position camera
+    camera.position.z = 20;
+   
+    // Animation function
+    const animate = () => {
+      requestAnimationFrame(animate);
+     
+      // Rotate particles slightly
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.rotation.y += 0.0003;
+     
+      // Render scene
+      renderer.render(scene, camera);
+    };
+   
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+   
+    // Start animation
+    animate();
+   
+    // Filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const pantheonFilter = document.getElementById('pantheon-filter');
+      const domainFilter = document.getElementById('domain-filter');
+      const searchInput = document.querySelector('.search-box input');
+      const searchButton = document.querySelector('.search-box button');
+      const deityCards = document.querySelectorAll('.deity-card');
+     
+      // Function to filter cards
+      function filterCards() {
+        const pantheonValue = pantheonFilter.value;
+        const domainValue = domainFilter.value;
+        const searchValue = searchInput.value.toLowerCase();
+       
+        deityCards.forEach(card => {
+          const pantheon = card.querySelector('.deity-pantheon').textContent.toLowerCase();
+          const domain = card.querySelector('.deity-domain').textContent.toLowerCase();
+          const name = card.querySelector('.deity-name').textContent.toLowerCase();
+          const description = card.querySelector('.deity-description').textContent.toLowerCase();
+         
+          const pantheonMatch = pantheonValue === 'all' || pantheon === pantheonValue;
+          const domainMatch = domainValue === 'all' || domain.includes(domainValue.toLowerCase());
+          const searchMatch = searchValue === '' || 
+                            name.includes(searchValue) || 
+                            description.includes(searchValue);
+         
+          if (pantheonMatch && domainMatch && searchMatch) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+     
+      // Add event listeners
+      pantheonFilter.addEventListener('change', filterCards);
+      domainFilter.addEventListener('change', filterCards);
+      searchButton.addEventListener('click', filterCards);
+      searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+          filterCards();
+        }
+      });
+     
+      // Simulate login redirect for demonstration
+      const allLinks = document.querySelectorAll('a:not(.page-button)');
+      
+      allLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const originalDestination = e.currentTarget.getAttribute('href');
+          localStorage.setItem('redirectAfterLogin', originalDestination);
+          window.location.href = "login.html";
+
+        });
+      });
+    });
+  </script>
+</body>
+</html> 
